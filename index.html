@@ -1,165 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Reminder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicine Reminder</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef4ff;
+    padding: 20px;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #eef4ff;
-            margin: 0;
-            padding: 20px;
-            color: #263238;
-        }
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+}
 
-        .container {
-            max-width: 650px;
-            margin: 30px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+h1 {
+    text-align: center;
+    color: #315bd6;
+}
 
-        h1 {
-            text-align: center;
-            color: #315bd6;
-        }
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #667085;
-        }
+input {
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
 
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 7px;
-            border: 1px solid #ccd4e0;
-            border-radius: 8px;
-            font-size: 15px;
-        }
+#addBtn {
+    width: 100%;
+    margin-top: 20px;
+    background: #315bd6;
+    color: white;
+}
 
-        button {
-            padding: 11px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+.medicine {
+    background: #f0f5ff;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 8px;
+}
 
-        .add-btn {
-            width: 100%;
-            margin-top: 20px;
-            background: #315bd6;
-            color: white;
-        }
+.deleteBtn {
+    background: #dc3545;
+    color: white;
+}
 
-        .notify-btn {
-            width: 100%;
-            margin-top: 10px;
-            background: #e8efff;
-            color: #315bd6;
-        }
-
-        .medicine {
-            background: #f3f7ff;
-            padding: 15px;
-            margin-top: 15px;
-            border-left: 5px solid #315bd6;
-            border-radius: 8px;
-            overflow-wrap: anywhere;
-        }
-
-        .medicine h3 {
-            margin-top: 0;
-            color: #315bd6;
-        }
-
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .empty {
-            text-align: center;
-            color: #777;
-            padding: 15px;
-        }
-
-        #status {
-            text-align: center;
-            margin-top: 15px;
-            color: #267443;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            margin-top: 25px;
-        }
-    </style>
+#status {
+    color: #267443;
+}
+</style>
 </head>
 
 <body>
-
 <div class="container">
 
-    <h1>💊 Medicine Reminder</h1>
+<h1>💊 Medicine Reminder</h1>
+<p>Manage your daily medicine schedule.</p>
 
-    <p class="subtitle">
-        Manage your daily medicine schedule easily.
-    </p>
+<form id="medicineForm">
+    <label for="medicineName">Medicine Name</label>
+    <input id="medicineName" type="text"
+           placeholder="Enter medicine name" required>
 
-    <form id="medicineForm">
+    <label for="dosage">Dosage Instructions</label>
+    <input id="dosage" type="text"
+           placeholder="As prescribed" required>
 
-        <label for="medicineName">Medicine Name</label>
-        <input
-            type="text"
-            id="medicineName"
-            placeholder="Enter medicine name"
-            maxlength="100"
-            required
-        >
+    <label for="medicineTime">Reminder Time</label>
+    <input id="medicineTime" type="time" required>
 
-        <label for="dosage">Dosage Instructions</label>
-        <input
-            type="text"
-            id="dosage"
-            placeholder="Example: As prescribed"
-            maxlength="100"
-            required
-        >
+    <button id="addBtn" type="submit">+ Add Medicine</button>
+</form>
 
-        <label for="medicineTime">Reminder Time</label>
-        <input
-            type="time"
-            id="medicineTime"
-            required
-        >
+<p id="status" role="status"></p>
 
-        <button type="submit" class="add-btn">
-            + Add Medicine
-        </button>
+<h2>📋 My Medicines</h2>
+<div id="medicineList"></div>
 
-    </form>
+</div>
 
-    <button type="button" id="notifyBtn" class="notify-btn">
-        🔔 Enable Browser Notifications
-    </button>
+<script>
+(function () {
+    const form = document.getElementById("medicineForm");
+    const nameInput = document.getElementById("medicineName");
+    const dosageInput = document.getElementById("dosage");
+    const timeInput = document.getElementById("medicineTime");
+    const list = document.getElementById("medicineList");
+    const status = document.getElementById("status");
 
-    <p id="status
+    let medicines = [];
+
+    try {
+        medicines = JSON.parse(
+            localStorage.getItem("medicineList") || "[]"
+        );
+
+        if (!Array.isArray(medicines)) medicines = [];
+    } catch (error) {
+        medicines = [];
+    }
+
+    function saveData() {
+        try {
+            localStorage.setItem(
+                "medicineList",
+                JSON.stringify(medicines)
+            );
+        } catch (error) {
+            status.textContent =
+                "Could not save data in this browser.";
+        }
+    }
+
+    function renderMedicines() {
+        list.replaceChildren();
+
+        if (medicines.length === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "No medicines added yet.";
+            list.appendChild(empty);
+            return;
+        }
+
+        medicines.forEach(function (medicine, index) {
+            const card = document.createElement("div");
+            card.className = "medicine";
+
+            const title = document.createElement("h3");
+            title.textContent = "💊 " + medicine.name;
+
+            const dosage = document.createElement("p");
+            dosage.textContent = "Dosage: " + medicine.dosage;
+
+            const time = document.createElement("p");
+            time.textContent = "Time: " + medicine.time;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "deleteBtn";
+            deleteBtn.textContent = "Delete";
+
+            deleteBtn.addEventListener("click", function () {
+                medicines.splice(index, 1);
+                saveData();
+                renderMedicines();
+                status.textContent = "Medicine deleted.";
+            });
+
+            card.append(title, dosage, time, deleteBtn);
+            list.appendChild(card);
+        });
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = nameInput.value.trim();
+        const dosage = dosageInput.value.trim();
+        const time = timeInput.value;
+
+        if (!name || !dosage || !time) {
+            status.textContent = "Please fill in all fields.";
+            return;
+        }
+
+        medicines.push({
+            name: name,
+            dosage: dosage,
+            time: time
+        });
+
+        saveData();
+        renderMedicines();
+        form.reset();
+
+        status.textContent = "Medicine added successfully!";
+    });
+
+    renderMedicines();
+})();
+</script>
+
+</body>
+</html>
