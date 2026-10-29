@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Reminder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef4ff;
+            margin: 0;
+            padding: 20px;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #315bd6;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #667085;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccd4e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 20px;
+            background: #315bd6;
+            color: white;
+        }
+
+        .notify-btn {
+            width: 100%;
+            margin-top: 10px;
+            background: #e8efff;
+            color: #315bd6;
+        }
+
+        .medicine {
+            background: #f3f7ff;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 5px solid #315bd6;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .medicine h3 {
+            margin-top: 0;
+            color: #315bd6;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 15px;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 15px;
+            color: #267443;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>💊 Medicine Reminder</h1>
+
+    <p class="subtitle">
+        Manage your daily medicine schedule easily.
+    </p>
+
+    <form id="medicineForm">
+
+        <label for="medicineName">Medicine Name</label>
+        <input
+            type="text"
+            id="medicineName"
+            placeholder="Enter medicine name"
+            maxlength="100"
+            required
+        >
+
+        <label for="dosage">Dosage Instructions</label>
+        <input
+            type="text"
+            id="dosage"
+            placeholder="Example: As prescribed"
+            maxlength="100"
+            required
+        >
+
+        <label for="medicineTime">Reminder Time</label>
+        <input
+            type="time"
+            id="medicineTime"
+            required
+        >
+
+        <button type="submit" class="add-btn">
+            + Add Medicine
+        </button>
+
+    </form>
+
+    <button type="button" id="notifyBtn" class="notify-btn">
+        🔔 Enable Browser Notifications
+    </button>
+
+    <p id="status
