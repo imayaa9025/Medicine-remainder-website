@@ -1,205 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medicine Reminder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Reminder</title>
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #eef4ff;
-    padding: 20px;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-.container {
-    max-width: 600px;
-    margin: 30px auto;
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #ede9fe);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-h1 {
-    text-align: center;
-    color: #315bd6;
-}
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
 
-label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-}
+        h1, h2 {
+            text-align: center;
+            color: #4f46e5;
+        }
 
-input {
-    width: 100%;
-    padding: 12px 0;
-    margin-top: 8px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    font-size: 16px;
-}
+        .subtitle {
+            text-align: center;
+            color: #666;
+        }
 
-button {
-    padding: 12px;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-}
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
 
-#addBtn {
-    width: 100%;
-    margin-top: 20px;
-    background: #315bd6;
-    color: white;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
 
-.medicine {
-    background: #f0f5ff;
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 8px;
-}
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
 
-.deleteBtn {
-    background: #dc3545;
-    color: white;
-}
+        .add-btn {
+            width: 100%;
+            margin-top: 20px;
+            background: #4f46e5;
+            color: white;
+        }
 
-#status {
-    color: #267443;
-}
-</style>
+        .notification-btn {
+            width: 100%;
+            margin-top: 10px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .medicine-card {
+            background: #f5f3ff;
+            border-left: 5px solid #4f46e5;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .medicine-card h3 {
+            margin-top: 0;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+            margin-top: 8px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+        }
+
+        #status {
+            text-align: center;
+            color: #555;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+            font-size: 13px;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
 
-<h1>💊 Medicine Reminder</h1>
-<p>Manage your daily medicine schedule.</p>
+    <div class="container">
 
-<form id="medicineForm">
-    <label for="medicineName">Medicine Name</label>
-    <input id="medicineName" type="text"
-           placeholder="Enter medicine name" required>
+        <h1>💊 Medicine Reminder</h1>
 
-    <label for="dosage">Dosage Instructions</label>
-    <input id="dosage" type="text"
-           placeholder="As prescribed" required>
+        <p class="subtitle">
+            Take your medicines on time!
+        </p>
 
-    <label for="medicineTime">Reminder Time</label>
-    <input id="medicineTime" type="time" required>
+        <form id="medicineForm">
 
-    <button id="addBtn" type="submit">+ Add Medicine</button>
-</form>
+            <label for="medicineName">Medicine Name</label>
+            <input
+                type="text"
+                id="medicineName"
+                placeholder="Enter medicine name"
+                required
+            >
 
-<p id="status" role="status"></p>
+            <label for="dosage">Dosage Instructions</label>
+            <input
+                type="text"
+                id="dosage"
+                placeholder="Example: One tablet after food"
+                required
+            >
 
-<h2>📋 My Medicines</h2>
-<div id="medicineList"></div>
+            <label for="reminderTime">Reminder Time</label>
+            <input
+                type="time"
+                id="reminderTime"
+                required
+            >
 
-</div>
+            <button type="submit" class="add-btn">
+                ➕ Add Medicine
+            </button>
 
-<script>
-(function () {
-    const form = document.getElementById("medicineForm");
-    const nameInput = document.getElementById("medicineName");
-    const dosageInput = document.getElementById("dosage");
-    const timeInput = document.getElementById("medicineTime");
-    const list = document.getElementById("medicineList");
-    const status = document.getElementById("status");
+        </form>
 
-    let medicines = [];
+        <button type="button" class="notification-btn" id="notificationBtn">
+            🔔 Enable Notifications
+        </button>
 
-    try {
-        medicines = JSON.parse(
-            localStorage.getItem("medicineList") || "[]"
-        );
+        <h2>My Medicines</h2>
 
-        if (!Array.isArray(medicines)) medicines = [];
-    } catch (error) {
-        medicines = [];
-    }
+        <div id="medicineList">
+            <p class="empty">No medicines added yet.</p>
+        </div>
 
-    function saveData() {
+        <p id="status">Add a medicine to get started.</p>
+
+        <footer>
+            Medicine Reminder - Student Project
+        </footer>
+
+    </div>
+
+    <script>
+        const form = document.getElementById("medicineForm");
+        const medicineList = document.getElementById("medicineList");
+        const statusText = document.getElementById("status");
+        const notificationBtn = document.getElementById("notificationBtn");
+
+        let medicines = [];
+
         try {
-            localStorage.setItem(
-                "medicineList",
-                JSON.stringify(medicines)
+            medicines = JSON.parse(
+                localStorage.getItem("medicineReminderData") || "[]"
             );
+
+            if (!Array.isArray(medicines)) {
+                medicines = [];
+            }
         } catch (error) {
-            status.textContent =
-                "Could not save data in this browser.";
-        }
-    }
-
-    function renderMedicines() {
-        list.replaceChildren();
-
-        if (medicines.length === 0) {
-            const empty = document.createElement("p");
-            empty.textContent = "No medicines added yet.";
-            list.appendChild(empty);
-            return;
+            medicines = [];
         }
 
-        medicines.forEach(function (medicine, index) {
-            const card = document.createElement("div");
-            card.className = "medicine";
+        function saveMedicines() {
+            try {
+                localStorage.setItem(
+                    "medicineReminderData",
+                    JSON.stringify(medicines)
+                );
+            } catch (error) {
+                statusText.textContent =
+                    "Unable to save data in this browser.";
+            }
+        }
 
-            const title = document.createElement("h3");
-            title.textContent = "💊 " + medicine.name;
+        function displayMedicines() {
+            medicineList.innerHTML = "";
 
-            const dosage = document.createElement("p");
-            dosage.textContent = "Dosage: " + medicine.dosage;
+            if (medicines.length === 0) {
+                medicineList.innerHTML =
+                    '<p class="empty">No medicines added yet.</p>';
+                return;
+            }
 
-            const time = document.createElement("p");
-            time.textContent = "Time: " + medicine.time;
+            medicines.forEach(function(medicine) {
+                const card = document.createElement("div");
+                card.className = "medicine-card";
 
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "deleteBtn";
-            deleteBtn.textContent = "Delete";
+                const title = document.createElement("h3");
+                title.textContent = "💊 " + medicine.name;
 
-            deleteBtn.addEventListener("click", function () {
-                medicines.splice(index, 1);
-                saveData();
-                renderMedicines();
-                status.textContent = "Medicine deleted.";
+                const dosage = document.createElement("p");
+                dosage.textContent = "Dosage: " + medicine.dosage;
+
+                const time = document.createElement("p");
+                time.textContent = "⏰ Time: " + medicine.time;
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-btn";
+                deleteButton.textContent = "🗑️ Delete";
+
+                deleteButton.addEventListener("click", function() {
+                    medicines = medicines.filter(function(item) {
+                        return item.id !== medicine.id;
+                    });
+
+                    saveMedicines();
+                    displayMedicines();
+
+                    statusText.textContent = "Medicine deleted.";
+                });
+
+                card.appendChild(title);
+                card.appendChild(dosage);
+                card.appendChild(time);
+                card.appendChild(deleteButton);
+
+                medicineList.appendChild(card);
+            });
+        }
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("medicineName")
+                .value.trim();
+
+            const dosage = document.getElementById("dosage")
+                .value.trim();
+
+            const time = document.getElementById("reminderTime")
+                .value;
+
+            if (!name || !dosage || !time) {
+                statusText.textContent = "Please fill in all fields.";
+                return;
+            }
+
+            medicines.push({
+                id: Date.now() + Math.random(),
+                name: name,
+                dosage: dosage,
+                time: time,
+                lastAlert: ""
             });
 
-            card.append(title, dosage, time, deleteBtn);
-            list.appendChild(card);
+            saveMedicines();
+            displayMedicines();
+            form.reset();
+
+            statusText.textContent = "Medicine added successfully!";
         });
-    }
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
+        notificationBtn.addEventListener("click", async function() {
+            if (!("Notification" in window)) {
+                statusText.textContent =
+                    "This browser does not support notifications.";
+                return;
+            }
 
-        const name = nameInput.value.trim();
-        const dosage = dosageInput.value.trim();
-        const time = timeInput.value;
+            try {
+                const permission =
+                    await Notification.requestPermission();
 
-        if (!name || !dosage || !time) {
-            status.textContent = "Please fill in all fields.";
-            return;
+                if (permission === "granted") {
+                    statusText.textContent =
+                        "Notifications enabled successfully!";
+                } else {
+                    statusText.textContent =
+                        "Notifications were not enabled.";
+                }
+            } catch (error) {
+                statusText.textContent =
+                    "Could not enable notifications.";
+            }
+        });
+
+        function checkReminders() {
+            const now = new Date();
+
+            const currentTime =
+                String(now.getHours()).padStart(2, "0") + ":" +
+                String(now.getMinutes()).padStart(2, "0");
+
+            const today =
+                now.getFullYear() + "-" +
+                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                String(now.getDate()).padStart(2, "0");
+
+            let dataChanged = false;
+
+            medicines.forEach(function(medicine) {
+                if (
+                    medicine.time === currentTime &&
+                    medicine.lastAlert !== today
+                ) {
+                    medicine.lastAlert = today;
+                    dataChanged = true;
+
+                    alert(
+                        "💊 Medicine Reminder\n\n" +
+                        "Medicine: " + medicine.name + "\n" +
+                        "Dosage: " + medicine.dosage
+                    );
+
+                    if (
+                        "Notification" in window &&
+                        Notification.permission === "granted"
+                    ) {
+                        try {
+                            new Notification("Medicine Reminder", {
+                                body: medicine.name +
+                                    " - " + medicine.dosage
+                            });
+                        } catch (error) {
+                            // The alert above is the fallback.
+                        }
+                    }
+                }
+            });
+
+            if (dataChanged) {
+                saveMedicines();
+            }
         }
 
-        medicines.push({
-            name: name,
-            dosage: dosage,
-            time: time
-        });
+        displayMedicines();
 
-        saveData();
-        renderMedicines();
-        form.reset();
-
-        status.textContent = "Medicine added successfully!";
-    });
-
-    renderMedicines();
-})();
-</script>
+        // Check the reminder time every 10 seconds.
+        checkReminders();
+        setInterval(checkReminders, 10000);
+    </script>
 
 </body>
 </html>
